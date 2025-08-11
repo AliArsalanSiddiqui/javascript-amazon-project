@@ -1,11 +1,10 @@
 import {cart} from '../../data/cart.js';
-import {products} from '../../data/products.js';
+import {getProduct} from '../../data/products.js';
 import {formatCurrency} from '../utils/money.js';
-import {deliveryOptions} from '../../data/deliveryOptions.js';
+import {getDeliveryOption} from '../../data/deliveryOptions.js';
 
 export function renderPaymentSummary(){
   let itemsPrice = 0;
-  let matchingItem;
   let shippingFee = 0;
   let beforeTax = 0;
   let tax = 0;
@@ -14,25 +13,16 @@ export function renderPaymentSummary(){
   let totalQuantity = 0;
   cart.forEach((cartItem)=>{
 
-    products.forEach((product)=>{
-      if(cartItem.productId === product.id){
-        matchingItem = product;
-      }
-    })
+  let matchingItem = getProduct(cartItem.productId);
     
     itemsPrice += matchingItem.priceCents * cartItem.quantity;
     totalQuantity += cartItem.quantity;
     
     const deliveryOptionId = cartItem.deliveryOptionId;
 
-    let deliveryOption;
+    let deliveryOption = getDeliveryOption(deliveryOptionId);
         
-    deliveryOptions.forEach((option)=>{
-     if(option.id === deliveryOptionId){
-        deliveryOption = option;
-         shippingFee += deliveryOption.priceCents;
-      }
-    })
+    shippingFee += deliveryOption.priceCents;
   })
   beforeTax = itemsPrice + shippingFee;
   tax = beforeTax / 10;
